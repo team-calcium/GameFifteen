@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ConsoleApplication1
+namespace GameFifteen
 {
     class Program
     {
         static int[,] a = new int[4, 4] {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}, {13,14,15,0}};
         static int x = 3, y = 3;
         static bool repeat = true;
-        static int broqch;
-
+        static int counter;       
         
-        
-        
-        static string[] топКандидати = new string[5];
+        static string[] topCandidates = new string[5];
         static int topCount = 0;
 
         static void PrintTable()
@@ -26,13 +23,7 @@ namespace ConsoleApplication1
                 Console.Write("| ");
                 for (int j = 0; j < 4; j++)
                 {
-                    if (a[i, j] >= 10)
-                        Console.Write("{0} ", a[i, j]);
-                    else
-                        if (a [i,j] == 0)
-                            Console.Write("   ");
-                        else
-                        Console.Write(" {0} ", a[i, j]);
+                    Console.Write("{0,2} ", a[i,j] != 0 ? a[i,j].ToString() : " ");                    
                 }
                 Console.WriteLine("|");
             }
@@ -41,7 +32,7 @@ namespace ConsoleApplication1
 
         static void GenerateТаблица()
         {
-            broqch = 0;
+            counter = 0;
             Random r = new Random();
             for (int i = 0; i < 1000; i++)
             {
@@ -169,7 +160,7 @@ namespace ConsoleApplication1
                 a[x, y] = temp;
                 x = k; 
                 y = l;
-                broqch++;
+                counter++;
                 PrintTable();
             }
         }
@@ -214,13 +205,13 @@ namespace ConsoleApplication1
         {
             if (i == 0)
             {
-                топКандидати[i] = res;
+                topCandidates[i] = res;
             }
             for (int j = 0; j < i; j++)
             {
-                топКандидати[j] = топКандидати[j + 1];
+                topCandidates[j] = topCandidates[j + 1];
             }
-            топКандидати[i] = res;
+            topCandidates[i] = res;
         }
 
         static void PrintTop()
@@ -230,7 +221,7 @@ namespace ConsoleApplication1
             {
                 for (int i = 5 - topCount; i < 5; i++)
                 {
-                    Console.WriteLine("{0}", топКандидати[i]);
+                    Console.WriteLine("{0}", topCandidates[i]);
                 }
             }
             else
@@ -297,22 +288,22 @@ namespace ConsoleApplication1
                 }
                 if (flagSolved)
                 {
-                    Console.WriteLine("Congratulations! You won the game in {0} moves.", broqch);
+                    Console.WriteLine("Congratulations! You won the game in {0} moves.", counter);
                    
                     Console.Write("Please enter your name for the top scoreboard: ");
                    
                     string s1 = Console.ReadLine();
                   
-                    string res = broqch + " moves by " + s1;
+                    string res = counter + " moves by " + s1;
                  
                     if (topCount < 5)
                     {
-                        топКандидати[topCount] = res;
+                        topCandidates[topCount] = res;
                  
                         topCount++;
                  
                
-                        Array.Sort(топКандидати);
+                        Array.Sort(topCandidates);
                     }
 
 
@@ -325,7 +316,7 @@ namespace ConsoleApplication1
                         for (int i = 4; i >= 0; i++)
                         
 
-                            if (топКандидати[i].CompareTo(res) <= 0)
+                            if (topCandidates[i].CompareTo(res) <= 0)
                             
 
                                 AddAndSort(i, res);
