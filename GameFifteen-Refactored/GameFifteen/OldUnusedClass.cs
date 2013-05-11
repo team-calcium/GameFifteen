@@ -5,47 +5,48 @@ using System.Text;
 
 namespace GameFifteen
 {
-    class Program
+    class OldUnusedClass
     {
-        static int[,] a = new int[4, 4] {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}, {13,14,15,0}};
+        static int[,] field = new int[4, 4] {{1,2,3,4}, {5,6,7,8}, {9,10,11,12}, {13,14,15,0}};
         static int x = 3, y = 3;
         static bool repeat = true;
-        static int counter;       
+        static int counter;
         
-        static string[] topCandidates = new string[5];
+        static string[] topScorers = new string[5];
         static int topCount = 0;
 
         static void PrintTable()
         {
+            //Console.WriteLine(game.Field);
             Console.WriteLine(" -------------");
             for (int i = 0; i < 4; i++)
             {
                 Console.Write("| ");
                 for (int j = 0; j < 4; j++)
                 {
-                    Console.Write("{0,2} ", a[i,j] != 0 ? a[i,j].ToString() : " ");                    
+                    Console.Write("{0,2} ", field[i,j] != 0 ? field[i,j].ToString() : " ");                    
                 }
                 Console.WriteLine("|");
             }
             Console.WriteLine(" -------------");
         }
 
-        static void GenerateТаблица()
+        static void GenerateRandomTable()
         {
             counter = 0;
-            Random r = new Random();
+            Random random = new Random();
             for (int i = 0; i < 1000; i++)
             {
-                int n = r.Next(3);
+                int n = random.Next(3);
                 if (n == 0)
                 {
                     int nx = x - 1;
                     int ny = y;
                     if (nx >= 0 && nx <= 3 && ny >= 0 && ny <= 3)
                     {
-                        int temp = a[x, y];
-                        a[x, y] = a[nx, ny];
-                        a[nx, ny] = temp;
+                        int temp = field[x, y];
+                        field[x, y] = field[nx, ny];
+                        field[nx, ny] = temp;
                         x = nx;
                         y = ny;
                     }
@@ -61,9 +62,9 @@ namespace GameFifteen
                     int ny = y + 1;
                     if (nx >= 0 && nx <= 3 && ny >= 0 && ny <= 3)
                     {
-                        int temp = a[x, y];
-                        a[x, y] = a[nx, ny];
-                        a[nx, ny] = temp;
+                        int temp = field[x, y];
+                        field[x, y] = field[nx, ny];
+                        field[nx, ny] = temp;
                         x = nx;
                         y = ny;
                     }
@@ -79,9 +80,9 @@ namespace GameFifteen
                     int ny = y;
                     if (nx >= 0 && nx <= 3 && ny >= 0 && ny <= 3)
                     {
-                        int temp = a[x, y];
-                        a[x, y] = a[nx, ny];
-                        a[nx, ny] = temp;
+                        int temp = field[x, y];
+                        field[x, y] = field[nx, ny];
+                        field[nx, ny] = temp;
                         x = nx;
                         y = ny;
                     }
@@ -97,9 +98,9 @@ namespace GameFifteen
                     int ny = y - 1;
                     if (nx >= 0 && nx <= 3 && ny >= 0 && ny <= 3)
                     {
-                        int temp = a[x, y];
-                        a[x, y] = a[nx, ny];
-                        a[nx, ny] = temp;
+                        int temp = field[x, y];
+                        field[x, y] = field[nx, ny];
+                        field[nx, ny] = temp;
                         x = nx;
                         y = ny;
                     }
@@ -111,7 +112,7 @@ namespace GameFifteen
             }
         }
 
-        static bool proverka(int i, int j)
+        static bool IsValidMove(int i, int j)
         {
             if ((i == x - 1 || i == x + 1) && j == y)
             {
@@ -127,17 +128,17 @@ namespace GameFifteen
         static void Move(int n)
         {
             int k = x, l = y;
-            bool flag = true;
+            bool searchCell = true;
             for (int i = 0; i < 4; i++)
             {
-                if (flag)
+                if (searchCell)
                 {
                     for (int j = 0; j < 4; j++)
                     {
-                        if (a[i, j] == n)
+                        if (field[i, j] == n)
                         {
                             k = i; l = j;
-                            flag = false;
+                            searchCell = false;
                             break;
                         }
                     }
@@ -148,16 +149,16 @@ namespace GameFifteen
                 }
             }
 
-            bool flag2 = proverka(k, l);
-            if (!flag2)
+            bool legalMove = IsValidMove(k, l);
+            if (!legalMove)
             {
-                Console.WriteLine("Illegal move!");
+                Console.WriteLine(Messages.IllegalMove);
             }
             else
             {
-                int temp = a[k, l];
-                a[k, l] = a[x, y];
-                a[x, y] = temp;
+                int temp = field[k, l];
+                field[k, l] = field[x, y];
+                field[x, y] = temp;
                 x = k; 
                 y = l;
                 counter++;
@@ -167,7 +168,7 @@ namespace GameFifteen
 
         static bool Solved()
         {
-            if (a[3, 3] == 0)
+            if (field[3, 3] == 0)
             {
                 int n = 1;
                 for (int i = 0; i < 4; i++)
@@ -176,7 +177,7 @@ namespace GameFifteen
                     {
                         if (n <= 15)
                         {
-                            if (a[i, j] == n)
+                            if (field[i, j] == n)
                             {
                                 n++;
                             }
@@ -197,7 +198,7 @@ namespace GameFifteen
 
         static void RestartGame()
         {
-            GenerateТаблица();
+            GenerateRandomTable();
             PrintTable();
         }
 
@@ -205,23 +206,23 @@ namespace GameFifteen
         {
             if (i == 0)
             {
-                topCandidates[i] = res;
+                topScorers[i] = res;
             }
             for (int j = 0; j < i; j++)
             {
-                topCandidates[j] = topCandidates[j + 1];
+                topScorers[j] = topScorers[j + 1];
             }
-            topCandidates[i] = res;
+            topScorers[i] = res;
         }
 
-        static void PrintTop()
+        static void PrintTopScorers()
         {
             Console.WriteLine("\nScoreboard:");
             if (topCount != 0)
             {
                 for (int i = 5 - topCount; i < 5; i++)
                 {
-                    Console.WriteLine("{0}", topCandidates[i]);
+                    Console.WriteLine("{0}", topScorers[i]);
                 }
             }
             else
@@ -231,22 +232,22 @@ namespace GameFifteen
             Console.WriteLine();
         }
 
-        static void Main(string[] args)
+        static void OldMain(string[] args)
         {
             while (repeat)
             {
-                GenerateТаблица();
-                Console.WriteLine("Welcome to the game “15”. Please try to arrange the numbers sequentially. Use 'top' to view the top scoreboard, 'restart' to start a new game and 'exit' to quit the game.\n");
+                GenerateRandomTable();
+                Console.WriteLine(Messages.Welcome);
                 PrintTable();
 
                 bool flagSolved = Solved();
                 while (!flagSolved)
                 {
-                    Console.Write("Enter a number to move: ");
+                    Console.Write(Messages.InputDemand);
                     string s = Console.ReadLine();
                     int n;
-                    bool flag = int.TryParse(s, out n);
-                    if (flag)
+                    bool isNumberInput = int.TryParse(s, out n);
+                    if (isNumberInput)
                     {
                         if (n >= 1 && n <= 15)
                         {
@@ -254,7 +255,7 @@ namespace GameFifteen
                         }
                         else
                         {
-                            Console.WriteLine("Illegal move!");
+                            Console.WriteLine(Messages.IllegalMove);
                         }
                     }
                     else
@@ -275,11 +276,11 @@ namespace GameFifteen
                             {
                                 if (s == "top")
                                 {
-                                    PrintTop();
+                                    PrintTopScorers();
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Illegal command!");
+                                    Console.WriteLine(Messages.IllegalCommand);
                                 }
                             }
                         }
@@ -288,44 +289,31 @@ namespace GameFifteen
                 }
                 if (flagSolved)
                 {
-                    Console.WriteLine("Congratulations! You won the game in {0} moves.", counter);
+                    Console.WriteLine(Messages.CongratulationMessage(counter));
                    
-                    Console.Write("Please enter your name for the top scoreboard: ");
+                    Console.Write(Messages.NameDemand);
                    
-                    string s1 = Console.ReadLine();
+                    string currentName = Console.ReadLine();
                   
-                    string res = counter + " moves by " + s1;
-                 
+                    string res = counter + " moves by " + currentName;
+
                     if (topCount < 5)
                     {
-                        topCandidates[topCount] = res;
-                 
+                        topScorers[topCount] = res;
                         topCount++;
-                 
-               
-                        Array.Sort(topCandidates);
+                        Array.Sort(topScorers);
                     }
-
-
-
                     else
-
-
-                    
-
+                    {
                         for (int i = 4; i >= 0; i++)
-                        
-
-                            if (topCandidates[i].CompareTo(res) <= 0)
-                            
-
+                        {
+                            if (topScorers[i].CompareTo(res) <= 0)
+                            {
                                 AddAndSort(i, res);
-                            
-
-                        
-
-                    
-                    PrintTop();
+                            }
+                        }
+                    }
+                    PrintTopScorers();
                 }
             }
         }
