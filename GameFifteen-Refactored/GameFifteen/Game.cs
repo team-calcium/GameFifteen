@@ -10,15 +10,22 @@ namespace GameFifteen
     {        
         public Field Field { get; set; }
         public Player Player { get; set; }
+        public int Complexity { get; set; }
 
         public Game()
+            :this(1000)
         {
+        }
+
+        public Game(int complexity)
+        {
+            this.Complexity = complexity;
             this.Restart();
         }
 
         public void Restart()
         {
-            this.Field = Field.GetRandomField();
+            this.Field = Field.GetRandomField(this.Complexity);
             this.Player = new Player();
         }
 

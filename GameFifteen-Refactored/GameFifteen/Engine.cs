@@ -141,9 +141,21 @@ namespace GameFifteen
         }
 
         private void Restart()
-        {
-            this.game.Restart();
+        {            
             this.render(Messages.Welcome);
+            this.render(Messages.ComplexityDemand);
+            int complexity = 0;
+            while (!int.TryParse(this.inputReader(), out complexity) || complexity < 1)
+            {
+                this.render(Messages.InvalidComplexityValue);
+                this.render(Messages.ComplexityDemand);
+            }
+            this.game.Complexity = complexity;
+            this.game.Restart();
+            while (this.game.IsSolved())
+            {
+                this.game.Restart();
+            }
             this.render(this.game.Field);
         }
 

@@ -22,10 +22,11 @@ namespace GameFifteen
                 { 1, 2, 3, 4 }, 
                 { 5, 6, 7, 8 }, 
                 { 9, 10, 11, 12 }, 
-                { 13, 14, 0, 15 } 
+                { 13, 14, 15, 0 } 
             };
 
-            this.RecalculateEmptyCellPosition();
+            this.EmptyX = 3;
+            this.EmptyY = 3;
         }
 
         public void RecalculateEmptyCellPosition()
@@ -60,13 +61,61 @@ namespace GameFifteen
             }
         }
 
-        public static Field GetRandomField()
+        public static Field GetRandomField(int NumberOfMoves)
         {
             Field result = new Field();
+            Random rand = new Random();
+            Direction direction = Direction.Right;
+            int neighbourX = result.EmptyX;
+            int neighbourY = result.EmptyY;
 
-            //TODO - have to rewrite random field generator!
-            result.RecalculateEmptyCellPosition();
+            for (int i = 0; i < NumberOfMoves; i++)
+            {
+                direction = (Direction)rand.Next(4);
+                result.CalculateNeighbourCoordinatesFromDirection(direction, out neighbourX, out neighbourY);
+                while (!IsCellInRange(neighbourX, neighbourY))
+                {
+                    direction = (Direction)(((int)direction + 1) % 4);
+                    result.CalculateNeighbourCoordinatesFromDirection(direction, out neighbourX, out neighbourY);
+                }
+
+                result.Cells[result.EmptyX, result.EmptyY] = result.Cells[neighbourX, neighbourY];
+                result.Cells[neighbourX, neighbourY] = 0;
+                result.EmptyX = neighbourX;
+                result.EmptyY = neighbourY;
+            }
+
             return result;
+        }
+
+        private static bool IsCellInRange(int x, int y)
+        {
+            return x >= 0 && x < Field.Width && y >= 0 && y < Field.Height;
+        }
+
+        private void CalculateNeighbourCoordinatesFromDirection(Direction direction, out int x, out int y)
+        {
+            switch (direction)
+            {
+                case Direction.Down:
+                    x = this.EmptyX;
+                    y = this.EmptyY + 1;
+                    break;
+                case Direction.Up:
+                    x = this.EmptyX;
+                    y = this.EmptyY - 1;
+                    break;
+                case Direction.Left:
+                    x = this.EmptyX - 1;
+                    y = this.EmptyY;
+                    break;
+                case Direction.Right:
+                    x = this.EmptyX + 1;
+                    y = this.EmptyY;
+                    break;
+                default:
+                    throw new ArgumentException("direction must be Up, Left, Down or Right!");
+            }
         }
 
         public override string ToString()
