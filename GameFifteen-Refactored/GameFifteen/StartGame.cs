@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace GameFifteen
 {
-    class StartGame
+    /// <summary>
+    /// Game starting point
+    /// </summary>
+    public class StartGame
     {
         static void Main()
         {
             Engine engine = new Engine(
-            x => Console.WriteLine(x),
-            () => Console.ReadLine()
+                x => Console.WriteLine(x),
+                () => Console.ReadLine()
             );
             engine.Start();
         }

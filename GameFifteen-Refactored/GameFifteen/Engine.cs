@@ -1,15 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace GameFifteen
 {
-    class Engine
+
+    /// <summary>
+    /// Class responsible for the main game logic
+    /// </summary>
+    public class Engine
     {
+        /// <summary>
+        /// Renderer used by the Engine to render given objects
+        /// </summary>
+        /// <param name="obj">Object to be rendered (usually some string expression)</param>
         public delegate void Render(object obj);
+
+        /// <summary>
+        /// The method for getting user input
+        /// </summary>
+        /// <returns>User input as string</returns>
         public delegate string InputReader();
 
         private Game game;
@@ -17,6 +28,11 @@ namespace GameFifteen
         private InputReader inputReader;
         private bool play;
 
+        /// <summary>
+        /// Creates a new Engine instance
+        /// </summary>
+        /// <param name="stringRenderer">Renderer used by the Engine to render given objects(usually strings)</param>
+        /// <param name="stringInputReader">The method for getting user input</param>
         public Engine(Render stringRenderer, InputReader stringInputReader)
         {
             this.game = new Game();
@@ -25,6 +41,9 @@ namespace GameFifteen
             this.play = true;
         }
 
+        /// <summary>
+        /// Gets the game field cells
+        /// </summary>
         public int[,] Cells
         {
             get
@@ -33,41 +52,34 @@ namespace GameFifteen
             }
         }
 
+        /// <summary>
+        /// Gets the empty cell x coordinate
+        /// </summary>
         public int EmptyCellX
         {
             get
             {
                 return this.game.Field.EmptyX;
             }
-            set
-            {
-                this.game.Field.EmptyX = value;
-            }
         }
-
+        /// <summary>
+        /// Gets the empty cell y coordinate
+        /// </summary>
         public int EmptyCellY
         {
             get
             {
                 return this.game.Field.EmptyY;
             }
-            set
-            {
-                this.game.Field.EmptyY = value;
-            }
         }
 
+        /// <summary>
+        /// Starts the main game logic
+        /// </summary>
         public void Start()
         {
             this.play = true;
-            try
-            {
-                TopScores.GetScoreBoard();
-            }
-            catch (FileLoadException ex)
-            {
-                this.render(ex.Message);
-            }
+            LoadScoresFromFile();
 
             while (this.play)
             {
@@ -89,10 +101,22 @@ namespace GameFifteen
             }
         }
 
+        private void LoadScoresFromFile()
+        {
+            try
+            {
+                TopScores.GetScoreBoard();
+            }
+            catch (FileLoadException ex)
+            {
+                this.render(ex.Message);
+            }
+        }
+
         private void UpdateScoreBoard()
         {
             this.game.Player.Name = this.inputReader() ?? "Unknown";
-            TopScores.Update(this.game.Player);
+            TopScores.AddPlayerToScoreBoard(this.game.Player);
         }
 
         private string GetGameWonScreen()
@@ -141,7 +165,7 @@ namespace GameFifteen
         }
 
         private void Restart()
-        {            
+        {
             this.render(Messages.Welcome);
             this.render(Messages.ComplexityDemand);
             int complexity = 0;
@@ -173,9 +197,9 @@ namespace GameFifteen
         }
 
 
-        public void TryMove(int cellValue)
+        private void TryMove(int cellValue)
         {
-            if (cellValue < 0 || cellValue > Field.MaxValue)
+            if (cellValue < 0 || cellValue > Field.MaxCellValue)
             {
                 this.render(Messages.CellValueOutOfRange);
                 return;
@@ -193,16 +217,11 @@ namespace GameFifteen
             {
                 this.render(Messages.IllegalMove);
             }
-
         }
 
-        private void MakeMove(int startX, int startY)
+        private void MakeMove(int newEmptyCellX, int newEmptyCellY)
         {
-            this.Cells[EmptyCellX, EmptyCellY] = this.Cells[startX, startY];
-            this.Cells[startX, startY] = 0;
-            EmptyCellX = startX;
-            EmptyCellY = startY;
-
+            this.game.Field.MoveEmptyCell(newEmptyCellX, newEmptyCellY);
             this.game.Player.Move();
         }
     }

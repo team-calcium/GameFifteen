@@ -50,8 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="PlayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MessagesTests.cs" />
+    <Compile Include="GameTest.cs" />
+    <Compile Include="FieldTest.cs" />
+    <Compile Include="EngineTest.cs" />
+    <Compile Include="TopScoresTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GameFifteen\GameFifteen.csproj">

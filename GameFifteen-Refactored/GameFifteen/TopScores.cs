@@ -7,12 +7,18 @@ using System.IO;
 
 namespace GameFifteen
 {
-    static class TopScores
+    /// <summary>
+    /// Static class for managing, saving and loading top scores
+    /// </summary>
+    public static class TopScores
     {
-        private const int NumberOfPlayersToSave = 5;
+        private const int NumberOfPlayersToSave = 10;
         private const string SaveScoresPath = "scores.txt";
         private static List<Player> topPlayers;
 
+        /// <summary>
+        /// Static constructor for loading topscorers from file
+        /// </summary>
         static TopScores()
         {
             topPlayers = new List<Player>();
@@ -28,6 +34,49 @@ namespace GameFifteen
             {
                 GetTopScoresFromFile();
             }
+        }
+
+        /// <summary>
+        /// Getting the top scores board
+        /// </summary>
+        /// <returns>The Scoreboard as string</returns>
+        public static string GetScoreBoard()
+        {
+            StringBuilder scoreBoard = new StringBuilder();
+            scoreBoard.AppendLine();
+            scoreBoard.AppendLine("-----------------------");
+            scoreBoard.Append("Top scores:");
+            scoreBoard.AppendLine();
+            int savedPlayersCount = topPlayers.Count;
+            if (savedPlayersCount > 0)
+            {
+                for (int i = 0; i < savedPlayersCount; i++)
+                {
+                    scoreBoard.AppendLine(topPlayers[i].ToString());
+                }
+            }
+            else
+            {
+                scoreBoard.AppendLine("<the scoreboard is currently empty!> ");
+            }
+            scoreBoard.AppendLine("-----------------------");
+
+            return scoreBoard.ToString();
+        }
+
+        /// <summary>
+        /// Adds a player to top scores (only a fixed number of scores saved).
+        /// </summary>
+        /// <param name="player">The player to add</param>
+        public static void AddPlayerToScoreBoard(Player player)
+        {
+            topPlayers.Add(player);
+            topPlayers.Sort((x, y) => x.Moves.CompareTo(y.Moves));
+            if (topPlayers.Count > TopScores.NumberOfPlayersToSave)
+            {
+                topPlayers.RemoveAt(NumberOfPlayersToSave - 1);
+            }
+            SaveTopScoresToFile();
         }
 
         private static void GetTopScoresFromFile()
@@ -76,39 +125,5 @@ namespace GameFifteen
             }
         }
 
-        public static string GetScoreBoard()
-        {
-            StringBuilder scoreBoard = new StringBuilder();
-            scoreBoard.AppendLine();
-            scoreBoard.AppendLine("-----------------------");
-            scoreBoard.Append("Top scores:");
-            scoreBoard.AppendLine();
-            int savedPlayersCount = topPlayers.Count;
-            if (savedPlayersCount > 0)
-            {                
-                for (int i = 0; i < savedPlayersCount; i++)
-                {
-                    scoreBoard.AppendLine(topPlayers[i].ToString());
-                }
-            }
-            else
-            {
-                scoreBoard.AppendLine("<the scoreboard is currently empty!> ");
-            }
-            scoreBoard.AppendLine("-----------------------");
-
-            return scoreBoard.ToString();
-        }
-
-        public static void Update(Player player)
-        {
-            topPlayers.Add(player);
-            topPlayers.Sort((x, y) => x.Moves.CompareTo(y.Moves));
-            if (topPlayers.Count > TopScores.NumberOfPlayersToSave)
-            {
-                topPlayers.RemoveAt(NumberOfPlayersToSave - 1);
-            }
-            SaveTopScoresToFile();
-        }
     }
 }
