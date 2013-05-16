@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GameFifteen;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GameFifteenUnitTests
 {
@@ -10,13 +11,20 @@ namespace GameFifteenUnitTests
     public class EngineTest
     {
         public const string FirstExpectedStart = @"
-Welcome to the game “15”. 
-Please try to arrange the numbers sequentially. 
-Use: 
-'top' to view the top scoreboard, 
-'restart' to start a new game, 
-'exit' to quit the game.
-
+
+Welcome to the game “15”. 
+
+Please try to arrange the numbers sequentially. 
+
+Use: 
+
+'top' to view the top scoreboard, 
+
+'restart' to start a new game, 
+
+'exit' to quit the game.
+
+
 Input the level of complexity (integer value bigger than 1):
 -------------
 |  1  2  3  4 |
@@ -29,13 +37,20 @@ Enter a number to move:
 ";
 
         public const string SecondExpectedStart = @"
-Welcome to the game “15”. 
-Please try to arrange the numbers sequentially. 
-Use: 
-'top' to view the top scoreboard, 
-'restart' to start a new game, 
-'exit' to quit the game.
-
+
+Welcome to the game “15”. 
+
+Please try to arrange the numbers sequentially. 
+
+Use: 
+
+'top' to view the top scoreboard, 
+
+'restart' to start a new game, 
+
+'exit' to quit the game.
+
+
 Input the level of complexity (integer value bigger than 1):
 -------------
 |  1  2  3  4 |
@@ -60,8 +75,11 @@ Enter a number to move:
             commands.Enqueue("exit");
 
             engine.Start();
+            string resultString = output.ToString().Replace("\r\n", "").Replace("\n\r", "");
+            string firstChoice = FirstExpectedStart.Replace("\r\n", "").Replace("\n\r", "");
+            string secondChoice = SecondExpectedStart.Replace("\r\n", "").Replace("\n\r", "");
 
-            Assert.AreEqual(FirstExpectedStart == output.ToString() || SecondExpectedStart == output.ToString(), true);
+            Assert.AreEqual(firstChoice == resultString || secondChoice == resultString, true);
         }
 
         [TestMethod]
@@ -115,44 +133,91 @@ Enter a number to move:
         }
 
         [TestMethod]
-        public void TestGameWinScreen()
+        public void TestGameWinScenario()
         {
-            int[,] newCells = {
-                                    {1,2,3,4},
-                                    {5,6,7,8},
-                                    {9,10,11,12},
-                                    {13,14,0,15}
-                                };
             StringBuilder output = new StringBuilder();
-            Queue<string> commands = new Queue<string>();
-            int count = 0;
+            Queue<string> commands = new Queue<string>();            
             Engine engine = new Engine(
-                (x) => {
-                    if (++count == 3)
-                    {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            for (int j = 0; j < 4; j++)
-                            {
-                                engine.Cells[i, j] = newCells[i, j];
-                            }
-                        }
-                    }
-                    if (count > 5)
-                    {
-                        output.AppendLine(x.ToString());
-                    }
-                },
+                (x) => output.AppendLine(x.ToString()),
                 () => { return commands.Dequeue(); }
             );
-            commands.Enqueue("1");
-            commands.Enqueue("15");
 
-            commands.Enqueue("1");
-            commands.Enqueue("exit");
-            engine.Start();
+            string valueToMove;
+            if (engine.EmptyCellX == 2)
+            {
+                valueToMove = "12";
+            }
+            else
+            {
+                valueToMove = "15";
+            }
+
+            engine.ExecuteCommand(valueToMove);
+            Game game = new Game();
+            for (int i = 0; i < Field.Width; i++)
+            {
+                for (int j = 0; j < Field.Height; j++)
+                {
+                    game.Field.Cells[i, j] = engine.Cells[i, j];
+                }
+            }            
             
-            Assert.AreEqual(false, true, "Empty cell is not in place");
+            Assert.AreEqual(game.IsSolved(), true, "Game solved scenario failed - engine doesn't seem to be moving correctly the fields.");
+        }
+
+        [TestMethod]
+        public void TestGameInvalidCellValue()
+        {
+            StringBuilder output = new StringBuilder();
+            Queue<string> commands = new Queue<string>();
+            Engine engine = new Engine(
+                (x) => output.AppendLine(x.ToString()),
+                () => { return commands.Dequeue(); }
+            );
+
+            engine.TryMove(0);
+            string message = output.ToString().Replace("\r\n","").Replace("\n\r","");
+
+            Assert.AreEqual(message, Messages.CellValueOutOfRange, "Player can't move the empty cell!");
+        }
+
+        [TestMethod]
+        public void TestGameIllegalMove()
+        {
+            StringBuilder output = new StringBuilder();
+            Queue<string> commands = new Queue<string>();
+            Engine engine = new Engine(
+                (x) => output.AppendLine(x.ToString()),
+                () => { return commands.Dequeue(); }
+            );
+
+            engine.TryMove(1);
+            string message = output.ToString().Replace("\r\n", "").Replace("\n\r", "");
+            string expected = Messages.IllegalMove.Replace("\r\n", "").Replace("\n\r", "");
+            Assert.AreEqual(message, expected, "Player can't move stucked cell!");
+        }
+
+        [TestMethod]
+        public void TestGameFieldCellsConsistency()
+        {
+            StringBuilder output = new StringBuilder();
+            Queue<string> commands = new Queue<string>();
+            Engine engine = new Engine(
+                (x) => output.AppendLine(x.ToString()),
+                () => { return commands.Dequeue(); }
+            );
+
+            bool[] visited = new bool[Field.MaxCellValue + 1];
+            int differentElements = 0;
+            foreach(int element in engine.Cells)
+            {
+                if (!visited[element])
+                {
+                    differentElements++;
+                }
+            }
+
+            Assert.AreEqual(differentElements <= Field.MaxCellValue, false, "Engine field must contain each value once!");
         }
 
     }

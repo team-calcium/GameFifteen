@@ -127,7 +127,7 @@ namespace GameFifteen
             return result.ToString();
         }
 
-        private void ExecuteCommand(string currentCommand)
+        public void ExecuteCommand(string currentCommand)
         {
             int cellValue;
             bool isNumber = int.TryParse(currentCommand, out cellValue);
@@ -196,10 +196,13 @@ namespace GameFifteen
             return false;
         }
 
-
-        private void TryMove(int cellValue)
+        /// <summary>
+        /// Checks if it is possible to move cell with given value and if it is not renders message
+        /// </summary>
+        /// <param name="cellValue">The value of the searched cell</param>
+        public void TryMove(int cellValue)
         {
-            if (cellValue < 0 || cellValue > Field.MaxCellValue)
+            if (cellValue <= 0 || cellValue > Field.MaxCellValue)
             {
                 this.render(Messages.CellValueOutOfRange);
                 return;

@@ -10,7 +10,7 @@ namespace GameFifteenUnitTests
         [TestMethod]
         public void TestCongratulationMessage()
         {
-            string expected = "\n\rCongratulations! You won the game in 10 moves.";
+            string expected = "\r\nCongratulations! You won the game in 10 moves.";
             string result = Messages.CongratulationMessage(10);
 
             Assert.AreEqual(expected, result, "Congratulation message not working as expected!");

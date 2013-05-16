@@ -19,7 +19,7 @@ namespace GameFifteen
         /// Creates new Game with default complexity = 1000
         /// </summary>
         public Game()
-            :this(1000)
+            :this(1)
         {
         }
 
