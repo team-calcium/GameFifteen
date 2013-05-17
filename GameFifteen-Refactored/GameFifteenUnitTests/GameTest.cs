@@ -30,7 +30,7 @@ namespace GameFifteenUnitTests
                 }
             }
 
-            Assert.AreEqual(values.Count, Field.MaxCellValue + 1, "Game field doesn't Contain all values!");
+            Assert.AreEqual(values.Count, Field.MaxCellValue + 1, "Game field doesn't contain all values!");
         }
     }
 }

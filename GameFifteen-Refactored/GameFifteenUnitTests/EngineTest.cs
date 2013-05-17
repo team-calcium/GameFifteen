@@ -96,13 +96,13 @@ Enter a number to move:
 
             engine.Start();
 
-            int[,] FirstExpectedCells = {
+            int[,] firstExpectedCells = {
                                        {1,2,3,4},
                                        {5,6,7,8},
                                        {9,10,11,12},
                                        {13,14,0,15}
                                    };
-            int[,] SecondExpectedCells = {
+            int[,] secondExpectedCells = {
                                        {1,2,3,4},
                                        {5,6,7,8},
                                        {9,10,11,0},
@@ -118,7 +118,7 @@ Enter a number to move:
                 {
                     emptyCellIsInPlace = false;
                 }
-                expected = SecondExpectedCells;
+                expected = secondExpectedCells;
             }
             else
             {
@@ -126,7 +126,7 @@ Enter a number to move:
                 {
                     emptyCellIsInPlace = false;
                 }
-                expected = FirstExpectedCells;
+                expected = firstExpectedCells;
             }
             Assert.AreEqual(emptyCellIsInPlace, true, "Empty cell is not in place");
             CollectionAssert.AreEqual(expected, engine.Cells, "All cells are in place");
@@ -194,7 +194,7 @@ Enter a number to move:
             engine.TryMove(1);
             string message = output.ToString().Replace("\r\n", "").Replace("\n\r", "");
             string expected = Messages.IllegalMove.Replace("\r\n", "").Replace("\n\r", "");
-            Assert.AreEqual(message, expected, "Player can't move stucked cell!");
+            Assert.AreEqual(message, expected, "Player can't move cell, which doesn't neighbour the empty cell!");
         }
 
         [TestMethod]
